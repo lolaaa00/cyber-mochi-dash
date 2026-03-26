@@ -51,8 +51,15 @@ async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
     const data = await res.json();
     if (!data) return [];
     const entries: LeaderboardEntry[] = Object.values(data);
-    entries.sort((a, b) => b.score - a.score);
-    return entries.slice(0, 10);
+    // Deduplicate: keep only the highest score per username
+    const best = new Map<string, LeaderboardEntry>();
+    for (const e of entries) {
+      const existing = best.get(e.username);
+      if (!existing || e.score > existing.score) best.set(e.username, e);
+    }
+    const unique = Array.from(best.values());
+    unique.sort((a, b) => b.score - a.score);
+    return unique.slice(0, 10);
   } catch {
     return [];
   }
