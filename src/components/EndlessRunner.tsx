@@ -116,11 +116,7 @@ const REALMS: Realm[] = [
 
 const POWER_UP_COLORS = { magnet: "#ffcc00", shield: "#00ccff", speed: "#ff3366" };
 const POWER_UP_ICONS = { magnet: "M", shield: "S", speed: "⚡" };
-const DIFFICULTY_SETTINGS = {
-  Easy: { speedMult: 0.7, obstacleGap: 35, label: "Easy" },
-  Medium: { speedMult: 1.0, obstacleGap: 25, label: "Medium" },
-  Hard: { speedMult: 1.4, obstacleGap: 18, label: "Hard" },
-};
+const DEFAULT_DIFFICULTY = { speedMult: 1.0, obstacleGap: 25 };
 
 const EndlessRunner = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
