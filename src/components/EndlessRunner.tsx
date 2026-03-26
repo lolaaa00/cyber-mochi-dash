@@ -183,10 +183,6 @@ const EndlessRunner = () => {
     }
   }, [username]);
 
-  useEffect(() => {
-    localStorage.setItem("cyberMochiDifficulty", difficulty);
-    difficultyRef.current = DIFFICULTY_SETTINGS[difficulty];
-  }, [difficulty]);
 
   // Image loading
   useEffect(() => {
