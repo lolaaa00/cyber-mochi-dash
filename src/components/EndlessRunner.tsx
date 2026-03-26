@@ -730,23 +730,6 @@ const EndlessRunner = () => {
             />
           </div>
 
-          {/* Difficulty */}
-          <div className="w-72 sm:w-80 md:w-96 mb-6">
-            <label className="font-display text-xs sm:text-sm text-accent uppercase tracking-wider mb-2 block">Difficulty</label>
-            <div className="flex gap-2">
-              {(["Easy", "Medium", "Hard"] as const).map((d) => (
-                <button key={d} onClick={() => setDifficulty(d)}
-                  className={`flex-1 py-2.5 rounded-lg font-display text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 ${difficulty === d ? "text-background" : "text-muted-foreground hover:text-foreground"}`}
-                  style={{
-                    background: difficulty === d ? "linear-gradient(135deg, #bca2ff, #7c5cff)" : "transparent",
-                    border: difficulty === d ? "1.5px solid #bca2ff" : "1.5px solid rgba(188,162,255,0.25)",
-                    boxShadow: difficulty === d ? "0 0 15px rgba(188,162,255,0.4)" : "none",
-                  }}>
-                  {d}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* High Score */}
           {highScore > 0 && (
