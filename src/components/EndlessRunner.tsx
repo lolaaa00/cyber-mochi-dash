@@ -701,19 +701,22 @@ const EndlessRunner = () => {
             style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 3px)" }} />
           
           {/* Title */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-center leading-tight tracking-wider mb-1"
-            style={{ background: "linear-gradient(135deg, #7c5cff 0%, #bca2ff 30%, #00ffff 60%, #ff66cc 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 30px rgba(124,92,255,0.5))" }}>
-            CYBER<br/>MOCHI<br/>DASH
-          </h1>
-          <p className="font-body text-xs sm:text-sm text-accent uppercase tracking-[0.3em] mb-6 md:mb-8 opacity-80">
+          <div className="text-center mb-2">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-[0.15em] leading-none"
+              style={{ background: "linear-gradient(135deg, #7c5cff 0%, #bca2ff 30%, #00ffff 60%, #ff66cc 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 30px rgba(124,92,255,0.5))" }}>
+              CYBER MOCHI
+            </h1>
+            <div className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-[0.5em] mt-1"
+              style={{ background: "linear-gradient(135deg, #ff3366 0%, #ff66b2 50%, #cc33ff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 20px rgba(255,51,102,0.5))" }}>
+              DASH
+            </div>
+          </div>
+          <p className="font-body text-xs sm:text-sm text-accent uppercase tracking-[0.3em] mb-4 md:mb-6 opacity-80">
             Powered by GenLayer
           </p>
 
-          {/* Mochi character */}
-          <div className="relative mb-6 md:mb-8">
-            <div className="absolute inset-0 rounded-2xl opacity-30" style={{ boxShadow: "0 0 40px #bca2ff, 0 0 80px #7c5cff" }} />
-            <img src={mochiImg} alt="Mochi" className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 object-contain animate-float drop-shadow-[0_0_20px_rgba(188,162,255,0.6)]" />
-          </div>
+          {/* Mochi character - no black box */}
+          <img src={mochiImg} alt="Mochi" className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 object-contain animate-float drop-shadow-[0_0_20px_rgba(188,162,255,0.6)] mb-4 md:mb-6" />
 
           {/* Username */}
           <div className="w-72 sm:w-80 md:w-96 mb-4">
