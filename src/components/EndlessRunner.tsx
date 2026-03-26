@@ -168,7 +168,7 @@ const EndlessRunner = () => {
   const magnetActiveRef = useRef(0);
   const shieldActiveRef = useRef(0);
   const speedBoostActiveRef = useRef(0);
-  const difficultyRef = useRef(DIFFICULTY_SETTINGS.Medium);
+  const difficultyRef = useRef(DEFAULT_DIFFICULTY);
 
   // Load saved progress
   useEffect(() => {
