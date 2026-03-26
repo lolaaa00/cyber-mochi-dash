@@ -128,7 +128,6 @@ const EndlessRunner = () => {
   const [currentRealm, setCurrentRealm] = useState("NEON CITY");
   const [activePowerUp, setActivePowerUp] = useState<string | null>(null);
   const [username, setUsername] = useState(() => localStorage.getItem("cyberMochiUsername") || "");
-  const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">(() => (localStorage.getItem("cyberMochiDifficulty") as any) || "Medium");
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [highScore, setHighScore] = useState(0);
