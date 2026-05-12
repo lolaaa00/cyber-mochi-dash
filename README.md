@@ -20,7 +20,7 @@ AI consensus is not decoration — it decides if the player lives or dies.
 ## GenLayer Integration
 
 **Contract file:** `mochi_dash_judge.py`
-**Contract address:** `0xYOUR_ADDRESS_HERE`
+**Contract address:** `0x681D6Ff474B6d16e7c0A17b721c03e47462D2F19`
 **Network:** Bradbury Testnet
 **SDK:** genlayer-js
 

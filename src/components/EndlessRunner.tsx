@@ -8,6 +8,7 @@ import obstacle4Img from "@/assets/obstacle4.png";
 import obstacle5Img from "@/assets/obstacle5.png";
 import obstacle6Img from "@/assets/obstacle6.png";
 import logoImg from "@/assets/logo.png";
+import { judgeCollision, CONTRACT_ADDRESS } from "@/genlayer";
 
 // ─── Firebase Config ─────────────────────────────────────────────
 const FIREBASE_URL = "https://cybermochi-4e86a-default-rtdb.firebaseio.com";
@@ -584,7 +585,27 @@ const EndlessRunner = () => {
             shieldActiveRef.current = 0; addParticles(p.x, p.y - sz / 2, "#00ccff", 30); obs.z = -100;
           } else {
             hitReactionRef.current = 0.5;
-            gameStateRef.current = "gameover"; setGameState("gameover");
+            // Call GenLayer to judge if crash was fair
+            judgeCollision(Math.floor(scoreRef.current), speedRef.current, REALMS[realmIndexRef.current]?.name || "NEON CITY")
+              .then(({ second_chance, reason, txHash }) => {
+                if (second_chance) {
+                  // AI says crash was unfair — give second chance!
+                  shieldActiveRef.current = 3;
+                  hitReactionRef.current = 0.5;
+                  gameStateRef.current = "playing";
+                  setGameState("playing");
+                  console.log("Second chance granted:", reason, "tx:", txHash);
+                } else {
+                  gameStateRef.current = "gameover";
+                  setGameState("gameover");
+                  handleGameOver();
+                }
+              })
+              .catch(() => {
+                gameStateRef.current = "gameover";
+                setGameState("gameover");
+                handleGameOver();
+              });
             handleGameOver();
             addParticles(p.x, p.y - sz / 2, "#ff0044", 25);
           }
