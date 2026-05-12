@@ -1,6 +1,10 @@
 # Cyber Mochi Dash — AI-Judged Endless Runner on GenLayer
 
-An endless runner game where GenLayer's Intelligent Contract uses AI consensus to judge if a collision was fair or unfair. If unfair, Mochi gets a second chance — making AI consensus the core mechanic.
+An endless runner where GenLayer's Intelligent Contract uses AI consensus to judge if a collision was fair or unfair. If unfair, Mochi gets a second chance — making AI consensus the core game mechanic.
+
+## Demo Video
+
+https://youtu.be/yJqzWqcj_UM
 
 ## Live App
 
@@ -11,11 +15,12 @@ https://cyber-mochi-dash.vercel.app/
 1. Mochi collides with an obstacle
 2. The frontend calls `judge_collision()` on the deployed Intelligent Contract
 3. 5 AI validators reach consensus using `gl.eq_principle_strict_eq()` and `gl.exec_prompt()`
-4. The AI judge evaluates speed, score, and realm difficulty
-5. If the crash was UNFAIR, Mochi gets a second chance — directly affecting gameplay
-6. The verdict and real transaction hash are displayed to the player
+4. The AI judge evaluates speed, score, and realm difficulty at the moment of crash
+5. If the crash was UNFAIR — Mochi gets a second chance and keeps playing
+6. If the crash was FAIR — game over
+7. The real transaction hash is returned and logged for every judgment
 
-AI consensus is not decoration — it decides if the player lives or dies.
+AI consensus decides if the player lives or dies. That is the core mechanic.
 
 ## GenLayer Integration
 
@@ -30,6 +35,7 @@ AI consensus is not decoration — it decides if the player lives or dies.
 - GenLayer Intelligent Contract (Python)
 - genlayer-js SDK
 - Firebase (leaderboard)
+- Tailwind CSS
 - Deployed on Vercel
 
 ## Run locally
@@ -38,3 +44,8 @@ AI consensus is not decoration — it decides if the player lives or dies.
 npm install
 npm run dev
 ```
+
+## Contract deployment
+
+The Intelligent Contract is deployed on GenLayer Studio (Bradbury Testnet).
+Source: `mochi_dash_judge.py`
