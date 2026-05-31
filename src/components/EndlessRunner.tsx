@@ -8,7 +8,7 @@ import obstacle4Img from "@/assets/obstacle4.png";
 import obstacle5Img from "@/assets/obstacle5.png";
 import obstacle6Img from "@/assets/obstacle6.png";
 import logoImg from "@/assets/logo.png";
-import { judgeCollision, CONTRACT_ADDRESS } from "@/genlayer";
+import { judgeCollision, connectWallet, getConnectedWallet, CONTRACT_ADDRESS, EXPLORER_TX_URL } from "@/genlayer";
 
 // ─── Firebase Config ─────────────────────────────────────────────
 const FIREBASE_URL = "https://cybermochi-4e86a-default-rtdb.firebaseio.com";
@@ -83,7 +83,7 @@ interface PowerUp { lane: number; z: number; type: "magnet" | "shield" | "speed"
 interface Particle { x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string; size: number; }
 interface TrailParticle { x: number; y: number; life: number; maxLife: number; }
 
-type GameState = "menu" | "playing" | "gameover" | "leaderboard";
+type GameState = "menu" | "playing" | "judging" | "gameover" | "leaderboard";
 
 interface Realm {
   name: string;
@@ -133,6 +133,8 @@ const EndlessRunner = () => {
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [highScore, setHighScore] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
+  const [walletAddress, setWalletAddress] = useState<string | null>(() => getConnectedWallet());
+  const [verdict, setVerdict] = useState<{ second_chance: boolean; reason: string; txHash: string } | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Game refs
@@ -585,16 +587,18 @@ const EndlessRunner = () => {
             shieldActiveRef.current = 0; addParticles(p.x, p.y - sz / 2, "#00ccff", 30); obs.z = -100;
           } else {
             hitReactionRef.current = 0.5;
-            // Call GenLayer to judge if crash was fair
+            gameStateRef.current = "judging";
+            setGameState("judging");
+            setVerdict(null);
+            addParticles(p.x, p.y - sz / 2, "#ff0044", 25);
             judgeCollision(Math.floor(scoreRef.current), speedRef.current, REALMS[realmIndexRef.current]?.name || "NEON CITY")
-              .then(({ second_chance, reason, txHash }) => {
-                if (second_chance) {
-                  // AI says crash was unfair — give second chance!
+              .then((v) => {
+                setVerdict(v);
+                if (v.second_chance) {
                   shieldActiveRef.current = 3;
                   hitReactionRef.current = 0.5;
                   gameStateRef.current = "playing";
                   setGameState("playing");
-                  console.log("Second chance granted:", reason, "tx:", txHash);
                 } else {
                   gameStateRef.current = "gameover";
                   setGameState("gameover");
@@ -606,8 +610,6 @@ const EndlessRunner = () => {
                 setGameState("gameover");
                 handleGameOver();
               });
-            handleGameOver();
-            addParticles(p.x, p.y - sz / 2, "#ff0044", 25);
           }
         }
       }
@@ -693,6 +695,11 @@ const EndlessRunner = () => {
           <div className="flex flex-col gap-1">
             <div className="font-display text-xl md:text-3xl text-foreground text-glow-primary">{score}</div>
             <div className="font-body text-xs md:text-sm text-secondary uppercase tracking-widest">{currentRealm}</div>
+            {walletAddress && (
+              <div className="font-mono text-[9px] opacity-60" style={{ color: "#00ffcc" }}>
+                {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+              </div>
+            )}
           </div>
           <div className="flex gap-3 md:gap-5 items-center">
             {activePowerUp && (
@@ -773,10 +780,60 @@ const EndlessRunner = () => {
             🏆 Leaderboard
           </button>
 
+          {/* Wallet connect */}
+          <div className="mt-5 flex flex-col items-center gap-2">
+            {walletAddress ? (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full"
+                style={{ background: "rgba(0,255,204,0.08)", border: "1px solid rgba(0,255,204,0.3)" }}>
+                <div className="w-2 h-2 rounded-full bg-[#00ffcc] shadow-[0_0_6px_#00ffcc]" />
+                <span className="font-mono text-xs" style={{ color: "#00ffcc" }}>
+                  {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                </span>
+              </div>
+            ) : (
+              <button
+                onClick={async () => { const addr = await connectWallet(); if (addr) setWalletAddress(addr); }}
+                className="px-5 py-2 rounded-full font-display text-xs uppercase tracking-wider transition-all hover:scale-[1.03] active:scale-[0.97]"
+                style={{ background: "rgba(188,162,255,0.1)", border: "1.5px solid rgba(188,162,255,0.4)", color: "#bca2ff" }}>
+                🦊 Connect Wallet
+              </button>
+            )}
+            <p className="font-body text-[9px] text-muted-foreground opacity-50 uppercase tracking-widest">
+              Identity only · GenLayer txs use ephemeral keys
+            </p>
+          </div>
+
           {/* Controls hint */}
-          <p className="font-body text-[10px] sm:text-xs text-muted-foreground mt-6 text-center max-w-xs md:max-w-md leading-relaxed">
+          <p className="font-body text-[10px] sm:text-xs text-muted-foreground mt-4 text-center max-w-xs md:max-w-md leading-relaxed">
             Arrow keys / WASD to move · Space / Up to jump · Swipe on mobile
           </p>
+        </div>
+      )}
+
+      {/* AI JUDGING OVERLAY */}
+      {gameState === "judging" && (
+        <div className="fixed inset-0 z-20 flex flex-col items-center justify-center px-4"
+          style={{ background: "linear-gradient(180deg, rgba(13,13,31,0.94) 0%, rgba(10,10,26,0.98) 100%)" }}>
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 3px)" }} />
+
+          <div className="w-14 h-14 rounded-full border-4 border-t-transparent animate-spin mb-5"
+            style={{ borderColor: "#bca2ff #bca2ff #bca2ff transparent" }} />
+
+          <h2 className="font-display text-2xl sm:text-3xl font-black uppercase tracking-wider mb-2"
+            style={{ background: "linear-gradient(135deg, #bca2ff, #00ffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 20px rgba(188,162,255,0.5))" }}>
+            GenVM Judging...
+          </h2>
+          <p className="font-body text-sm text-muted-foreground text-center max-w-xs mb-6">
+            The AI contract is reviewing your crash. You might get a second chance!
+          </p>
+
+          {/* Contract info */}
+          <div className="rounded-xl px-4 py-3 max-w-sm w-full text-center"
+            style={{ background: "rgba(188,162,255,0.06)", border: "1px solid rgba(188,162,255,0.2)" }}>
+            <p className="font-body text-[10px] text-muted-foreground uppercase tracking-widest mb-1">Contract</p>
+            <p className="font-mono text-xs text-accent break-all">{CONTRACT_ADDRESS}</p>
+          </div>
         </div>
       )}
 
@@ -809,9 +866,40 @@ const EndlessRunner = () => {
           </div>
 
           {highScore > 0 && (
-            <p className="font-body text-xs text-muted-foreground mb-6">
+            <p className="font-body text-xs text-muted-foreground mb-4">
               🏆 Best: <span className="text-accent font-display">{highScore}</span>
             </p>
+          )}
+
+          {/* GenVM verdict */}
+          {verdict && (
+            <div className="w-72 sm:w-80 md:w-96 rounded-xl px-4 py-4 mb-5 text-left"
+              style={{ background: verdict.second_chance ? "rgba(0,204,102,0.08)" : "rgba(255,51,102,0.08)", border: `1px solid ${verdict.second_chance ? "rgba(0,204,102,0.35)" : "rgba(255,51,102,0.35)"}` }}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-base">{verdict.second_chance ? "✅" : "⚖️"}</span>
+                <span className="font-display text-xs uppercase tracking-wider"
+                  style={{ color: verdict.second_chance ? "#00cc66" : "#ff3366" }}>
+                  {verdict.second_chance ? "Second Chance Granted" : "GenVM Verdict"}
+                </span>
+              </div>
+              {verdict.reason && (
+                <p className="font-body text-xs text-muted-foreground mb-3 leading-relaxed">
+                  {verdict.reason}
+                </p>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="font-body text-[10px] text-muted-foreground uppercase tracking-widest">TX</span>
+                <a
+                  href={`${EXPLORER_TX_URL}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[10px] underline underline-offset-2 hover:opacity-80 transition-opacity"
+                  style={{ color: "#bca2ff" }}
+                >
+                  {verdict.txHash.slice(0, 10)}...{verdict.txHash.slice(-6)}
+                </a>
+              </div>
+            </div>
           )}
 
           <button onClick={startGame}
