@@ -879,18 +879,18 @@ const EndlessRunner = () => {
                 <span className="text-base">{verdict.second_chance ? "✅" : "⚖️"}</span>
                 <span className="font-display text-xs uppercase tracking-wider"
                   style={{ color: verdict.second_chance ? "#00cc66" : "#ff3366" }}>
-                  {verdict.second_chance ? "Second Chance Granted" : "GenVM Verdict"}
+                  {verdict.second_chance ? "Second Chance Granted" : "No Match — Game Over"}
                 </span>
               </div>
               {verdict.reason && (
-                <p className="font-body text-xs text-muted-foreground mb-3 leading-relaxed">
-                  {verdict.reason}
+                <p className="font-body text-xs text-muted-foreground mb-3 leading-relaxed italic">
+                  "{verdict.reason}"
                 </p>
               )}
               <div className="flex items-center justify-between">
                 <span className="font-body text-[10px] text-muted-foreground uppercase tracking-widest">TX</span>
                 <a
-                  href={`${EXPLORER_TX_URL}`}
+                  href={`${EXPLORER_TX_URL}tx/${verdict.txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-mono text-[10px] underline underline-offset-2 hover:opacity-80 transition-opacity"
