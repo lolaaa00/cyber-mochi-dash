@@ -1,10 +1,25 @@
-import { createClient, createAccount } from 'genlayer-js';
+import { createClient, createAccount, generatePrivateKey } from 'genlayer-js';
 import { testnetBradbury } from 'genlayer-js/chains';
 
 export const CONTRACT_ADDRESS = '0x669fe79C4185609B701E9AF5FfEaAE927d6A871B';
-export const EXPLORER_TX_URL = 'https://explorer-bradbury.genlayer.com/';
+export const EXPLORER_URL = 'https://studio.genlayer.com/';
 
 const client = createClient({ chain: testnetBradbury });
+
+// Persistent game wallet — generated once, stored in localStorage.
+// All judge_collision calls come from this address so the player can
+// track their own transactions on the GenLayer explorer.
+function getOrCreateGameAccount() {
+  let pk = localStorage.getItem('cyberMochiGameKey');
+  if (!pk) {
+    pk = generatePrivateKey();
+    localStorage.setItem('cyberMochiGameKey', pk);
+  }
+  return createAccount(pk as `0x${string}`);
+}
+
+export const gameAccount = getOrCreateGameAccount();
+export const GAME_WALLET_ADDRESS: string = gameAccount.address;
 
 export interface JudgeResult {
   second_chance: boolean;
@@ -17,10 +32,8 @@ export async function judgeCollision(
   speed: number,
   realm: string
 ): Promise<JudgeResult> {
-  const account = createAccount();
-
   const txHash = await client.writeContract({
-    account,
+    account: gameAccount,
     address: CONTRACT_ADDRESS,
     functionName: 'judge_collision',
     args: [score.toString(), speed.toFixed(2), realm],
@@ -45,7 +58,7 @@ export async function getStats() {
   });
 }
 
-// MetaMask wallet connection — player identity display only.
+// MetaMask wallet — display identity only.
 export async function connectWallet(): Promise<string | null> {
   const eth = (window as Window & { ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<unknown> } }).ethereum;
   if (!eth) return null;

@@ -8,7 +8,7 @@ import obstacle4Img from "@/assets/obstacle4.png";
 import obstacle5Img from "@/assets/obstacle5.png";
 import obstacle6Img from "@/assets/obstacle6.png";
 import logoImg from "@/assets/logo.png";
-import { judgeCollision, connectWallet, getConnectedWallet, CONTRACT_ADDRESS, EXPLORER_TX_URL } from "@/genlayer";
+import { judgeCollision, connectWallet, getConnectedWallet, CONTRACT_ADDRESS, EXPLORER_URL, GAME_WALLET_ADDRESS } from "@/genlayer";
 
 // ─── Firebase Config ─────────────────────────────────────────────
 const FIREBASE_URL = "https://cybermochi-4e86a-default-rtdb.firebaseio.com";
@@ -766,6 +766,46 @@ const EndlessRunner = () => {
             </p>
           )}
 
+          {/* Wallet connect */}
+          <div className="w-72 sm:w-80 md:w-96 mb-4 rounded-xl overflow-hidden"
+            style={{ border: "1px solid rgba(188,162,255,0.2)" }}>
+            {/* MetaMask row */}
+            <div className="flex items-center justify-between px-4 py-2.5"
+              style={{ background: "rgba(188,162,255,0.06)", borderBottom: "1px solid rgba(188,162,255,0.1)" }}>
+              {walletAddress ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#00ffcc] shadow-[0_0_6px_#00ffcc]" />
+                  <span className="font-mono text-xs" style={{ color: "#00ffcc" }}>
+                    {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                  </span>
+                </div>
+              ) : (
+                <button
+                  onClick={async () => { const addr = await connectWallet(); if (addr) setWalletAddress(addr); }}
+                  className="flex items-center gap-2 font-display text-xs uppercase tracking-wider transition-all hover:opacity-80"
+                  style={{ color: "#bca2ff" }}>
+                  🦊 Connect Wallet
+                </button>
+              )}
+              <span className="font-body text-[9px] text-muted-foreground opacity-50 uppercase tracking-widest">MetaMask</span>
+            </div>
+            {/* Game wallet row — always visible, links to explorer */}
+            <a
+              href={`${EXPLORER_URL}accounts/${GAME_WALLET_ADDRESS}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between px-4 py-2 hover:opacity-80 transition-opacity"
+              style={{ background: "rgba(0,255,255,0.04)" }}>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#bca2ff] shadow-[0_0_4px_#bca2ff]" />
+                <span className="font-mono text-[10px]" style={{ color: "#bca2ff" }}>
+                  {GAME_WALLET_ADDRESS.slice(0, 6)}...{GAME_WALLET_ADDRESS.slice(-4)}
+                </span>
+              </div>
+              <span className="font-body text-[9px] text-muted-foreground opacity-50 uppercase tracking-widest">GenLayer ↗</span>
+            </a>
+          </div>
+
           {/* Launch Button */}
           <button onClick={startGame} disabled={!username.trim()}
             className="w-72 sm:w-80 md:w-96 py-4 rounded-xl font-display text-sm sm:text-base md:text-lg uppercase tracking-widest text-foreground transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed mb-3"
@@ -780,31 +820,8 @@ const EndlessRunner = () => {
             🏆 Leaderboard
           </button>
 
-          {/* Wallet connect */}
-          <div className="mt-5 flex flex-col items-center gap-2">
-            {walletAddress ? (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full"
-                style={{ background: "rgba(0,255,204,0.08)", border: "1px solid rgba(0,255,204,0.3)" }}>
-                <div className="w-2 h-2 rounded-full bg-[#00ffcc] shadow-[0_0_6px_#00ffcc]" />
-                <span className="font-mono text-xs" style={{ color: "#00ffcc" }}>
-                  {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                </span>
-              </div>
-            ) : (
-              <button
-                onClick={async () => { const addr = await connectWallet(); if (addr) setWalletAddress(addr); }}
-                className="px-5 py-2 rounded-full font-display text-xs uppercase tracking-wider transition-all hover:scale-[1.03] active:scale-[0.97]"
-                style={{ background: "rgba(188,162,255,0.1)", border: "1.5px solid rgba(188,162,255,0.4)", color: "#bca2ff" }}>
-                🦊 Connect Wallet
-              </button>
-            )}
-            <p className="font-body text-[9px] text-muted-foreground opacity-50 uppercase tracking-widest">
-              Identity only · GenLayer txs use ephemeral keys
-            </p>
-          </div>
-
           {/* Controls hint */}
-          <p className="font-body text-[10px] sm:text-xs text-muted-foreground mt-4 text-center max-w-xs md:max-w-md leading-relaxed">
+          <p className="font-body text-[10px] sm:text-xs text-muted-foreground mt-5 text-center max-w-xs md:max-w-md leading-relaxed">
             Arrow keys / WASD to move · Space / Up to jump · Swipe on mobile
           </p>
         </div>
@@ -890,7 +907,7 @@ const EndlessRunner = () => {
               <div className="flex items-center justify-between">
                 <span className="font-body text-[10px] text-muted-foreground uppercase tracking-widest">TX</span>
                 <a
-                  href={`${EXPLORER_TX_URL}tx/${verdict.txHash}`}
+                  href={`${EXPLORER_URL}transactions/${verdict.txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-mono text-[10px] underline underline-offset-2 hover:opacity-80 transition-opacity"
