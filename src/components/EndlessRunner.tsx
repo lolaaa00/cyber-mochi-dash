@@ -8,7 +8,7 @@ import obstacle4Img from "@/assets/obstacle4.png";
 import obstacle5Img from "@/assets/obstacle5.png";
 import obstacle6Img from "@/assets/obstacle6.png";
 import logoImg from "@/assets/logo.png";
-import { judgeCollision, connectWallet, getConnectedWallet, CONTRACT_ADDRESS, EXPLORER_URL, GAME_WALLET_ADDRESS } from "@/genlayer";
+import { judgeCollision, connectWallet, getConnectedWallet, CONTRACT_ADDRESS, EXPLORER_URL, EXPLORER_TX_URL, GAME_WALLET_ADDRESS } from "@/genlayer";
 
 // ─── Firebase Config ─────────────────────────────────────────────
 const FIREBASE_URL = "https://cybermochi-4e86a-default-rtdb.firebaseio.com";
@@ -791,7 +791,7 @@ const EndlessRunner = () => {
             </div>
             {/* Game wallet row — always visible, links to explorer */}
             <a
-              href={`${EXPLORER_URL}accounts/${GAME_WALLET_ADDRESS}`}
+              href={`${EXPLORER_TX_URL}/accounts/${GAME_WALLET_ADDRESS}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between px-4 py-2 hover:opacity-80 transition-opacity"
@@ -907,7 +907,7 @@ const EndlessRunner = () => {
               <div className="flex items-center justify-between">
                 <span className="font-body text-[10px] text-muted-foreground uppercase tracking-widest">TX</span>
                 <a
-                  href={`${EXPLORER_URL}transactions/${verdict.txHash}`}
+                  href={`${EXPLORER_TX_URL}/transactions/${verdict.txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-mono text-[10px] underline underline-offset-2 hover:opacity-80 transition-opacity"
