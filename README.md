@@ -4,7 +4,7 @@ An endless runner where a GenLayer Intelligent Contract uses AI consensus to jud
 
 ## Live App
 
-https://cyber-mochi-dash.vercel.app/
+https://cyber-mochi-dash-2p7y.vercel.app/
 
 ## X Post
 
