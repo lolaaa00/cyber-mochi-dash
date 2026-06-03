@@ -2,6 +2,10 @@
 
 An endless runner where a GenLayer Intelligent Contract uses AI consensus to judge whether a collision was fair. If unfair, Mochi gets a second chance — AI consensus is the core game mechanic.
 
+## Live App
+
+https://cyber-mochi-dash.vercel.app/
+
 ## How It Works
 
 1. Mochi collides with an obstacle
