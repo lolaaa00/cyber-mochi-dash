@@ -6,6 +6,10 @@ An endless runner where a GenLayer Intelligent Contract uses AI consensus to jud
 
 https://cyber-mochi-dash.vercel.app/
 
+## X Post
+
+https://x.com/Lolyy_001/status/2041160095359262835
+
 ## How It Works
 
 1. Mochi collides with an obstacle
